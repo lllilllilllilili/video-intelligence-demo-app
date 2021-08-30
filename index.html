@@ -1,0 +1,777 @@
+<html>
+
+
+<head>
+
+    <title>Video Intelligence API Visualiser</title>
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+
+    <meta name="description" content="Interactive visualiser for the Google Cloud Video Intelligence API.">
+    <meta name="keywords" content="google cloud, video, intelligence, api, video intelligence api, google cloud">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="/Users/hwang-ingyu/video-intelligence-api-visualiser/jquery.ajax-cross-origin.min.js"></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N80GH8KX9W"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-N80GH8KX9W', {client_storage: 'none'});
+
+    </script>
+
+
+    <style>
+
+        .spinner-wrapper {
+        position: fixed;
+        flex-flow: wrap;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        }
+
+        .wrap {
+            width: 100%;
+        }
+        
+        .spinner-wrapper.hidden {
+        display: none;
+        }
+        .spinner {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+        width: 100px;
+        }
+
+        .spinner .bar {
+        width: 20px;
+        height: 40px;
+        background-color: #3fa;
+        }
+        .spinner .bar:nth-child(1) {
+        animation: stretch 0.5s infinite alternate ease-in-out 0.2s;
+        }
+        .spinner .bar:nth-child(2) {
+        animation: stretch 0.5s infinite alternate 0.4s ease-in-out;
+        }
+        .spinner .bar:nth-child(3) {
+        animation: stretch 0.5s infinite alternate 0.6s ease-in-out;
+        }
+
+        @keyframes stretch {
+        0% {
+            transform: scaleY(1);
+        }
+        40% {
+            transform: scaleY(1);
+        }
+        100% {
+            transform: scaleY(2.5);
+        }
+        }
+
+        body {
+            text-align: center;
+            min-height: 1500px;
+            min-width: 1130px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            color: #5d5d5d;
+        }
+
+        #video-conatiner {
+
+            position: relative;
+            width: 800px;
+            margin: 15px;
+            display: inline-block;
+        }
+
+        #video-conatiner>canvas {
+            width: 100%;
+            position: absolute;
+            opacity: 0.8;
+            left: 0;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        video {
+            width: 100%;
+            margin: auto;
+            display: block;
+        }
+
+        video::-webkit-media-controls-fullscreen-button {
+            display: none !important;
+        }
+
+        .mdl-layout__header {
+            background-color: rgb(255 255 255);
+            color: #5d5d5d;
+            font-weight: 100;
+        }
+
+        #upload-data {
+            display: inline-block;
+            text-align: center;
+            vertical-align: top;
+            width: 250px;
+        }
+
+        #upload-data>p {
+            text-align: justify;
+        }
+
+        .feature-tabs {
+            margin: 30px;
+            text-align: center;
+        }
+
+        .feature-tabs>div {
+            display: inline-block;
+            font-size: 1.2em;
+            padding: 12px;
+            cursor: pointer;
+            color: #777777;
+            font-weight: 300;
+        }
+
+
+        .feature-tabs>.selected {
+            border-bottom: 2px solid #4285F4;
+        }
+
+        .feature-tabs>.disabled {
+            color: #cdcdcd;
+        }
+
+        .logo {
+            width: inherit;
+        }
+
+        .upload-area {
+
+            /* display: inline-block; */
+            width: 200px;
+            /* height: 62px; */
+            border: dashed #ededed 3px;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px;
+            overflow: hidden;
+        }
+
+        .data-warning {
+            background-color: #ffffc3;
+            /* display: inline-block; */
+            margin: auto;
+            position: relative;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .material-icons {
+            vertical-align: middle;
+            font-size: 19px;
+        }
+
+        .nav-tab>.material-icons {
+            color: #0F9D58;
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+
+    <div id="app"  class="mdl-layout--fixed-header">
+
+        <header class="mdl-layout__header">
+            <div class="mdl-layout-icon">
+                <img class="logo" src="assets/gs.png">
+                <img class="logo" src="assets/icon.png">
+            </div>
+            
+           
+            <div class="mdl-layout__header-row">
+
+                <span class="mdl-layout-title">Video Intelligence Demo App</span>
+            </div>
+        </header>
+
+        <div id="video-conatiner">
+            <canvas id="my_canvas" width="800" height="500"></canvas>
+            <video id="video" controls autoplay></video>
+        </div>
+
+
+
+        <div id="upload-data">
+            <h5>데이터를 분석합니다.</h5>
+            <p>비디오 파일을 업로드 하게 되면 데이터를 분석할 수 있습니다. 명령어 참조는 <a target="_blank"
+                    href="https://cloud.google.com/video-intelligence/docs/quickstart?utm_source=ext&utm_medium=partner&utm_campaign=CDR_zac_aiml_vid_intel_demo_interactive demo_060221&utm_content=-">여기</a>를 눌러주세요.
+                스크립트는 <a target="_blank"
+                    href="https://github.com/ZackAkil/video-intelligence-api-visualiser/blob/main/run_video_intelligence.py">여기</a>를 참고해주세요.
+                지금 당장 테스트 해볼 수 있습니다.
+            </p>
+
+            <p>이 앱은<b><u>절대로!</u></b> 비디오 파일 데이터를 저장하거나 전송하는데는 사용되지 않습니다. 단순히 분석 및 시각화를 위해 사용됩니다.</p>
+            <div class="upload-area" ondrop="drop_video(event)" ondragover="drag_enter(event)">
+                <p>비디오 파일을 올려주세요.</p>
+                <input id="video_input" type="file" accept="video/*" />
+            </div>
+            <!-- <div class="upload-area" ondrop="drop_json(event)" ondragover="drag_enter(event)">
+                <p>Your .json</p>
+                <input id="json_input" type="file" accept="application/JSON" />
+            </div> -->
+        </div>
+
+        <div v-if="data_misaligned" class="data-warning">
+            It looks like the json data dosn't align with the video file, are you sure you have all of the right files
+            uploaded?
+        </div>
+
+
+        <annotations-nav v-bind:title_ids_dict="title_ids_dict" v-bind:detected_features="detected_features"
+            v-bind:current_view="current_view" v-on:nav-clicked="set_current_view">
+        </annotations-nav>
+
+        <object-tracking-viz v-if="current_view == 'Object Tracking'" id="object_tracks" v-bind:json_data="json_data"
+            v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></object-tracking-viz>
+
+        <label-detection-viz v-if="current_view == 'Label Detection'" id="label_detection" v-bind:json_data="json_data"
+            v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></label-detection-viz>
+
+        <shot-detection-viz v-if="current_view == 'Shot Detection'" id="shot_detection" v-bind:json_data="json_data"
+            v-bind:video_info="video_info" v-on:shot-clicked="jump_video"></shot-detection-viz>
+
+        <speech-transcription-viz v-if="current_view == 'Speech Transcription'" id="speech_transcription"
+            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:word-clicked="jump_video">
+        </speech-transcription-viz>
+
+        <person-detection-viz v-if="current_view == 'Person Detection'" id="person_detection"
+            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+        </person-detection-viz>
+
+        <face-detection-viz v-if="current_view == 'Face Detection'" id="face_detection" v-bind:json_data="json_data"
+            v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+        </face-detection-viz>
+
+        <logo-recognition-viz v-if="current_view == 'Logo Recognition'" id="logo_recognition"
+            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+        </logo-recognition-viz>
+
+        <text-detection-viz v-if="current_view == 'Text Detection'" id="text_detection" v-bind:json_data="json_data"
+            v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+        </text-detection-viz>
+
+        <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'"
+            id="explicit_content_detection" v-bind:json_data="json_data" v-bind:video_info="video_info"
+            v-on:shot-clicked="jump_video">
+        </explicit-content-detection-viz>
+
+    </div>
+
+
+
+
+    <script src="utils/utils.js"></script>
+
+    <script src="components/object_tracking.js"></script>
+    <script src="components/label_detection.js"></script>
+    <script src="components/shot_detection.js"></script>
+    <script src="components/speech_transcription.js"></script>
+    <script src="components/person_detection.js"></script>
+    <script src="components/face_detection.js"></script>
+    <script src="components/logo_recognition.js"></script>
+    <script src="components/text_detection.js"></script>
+    <script src="components/explicit_content_detection.js"></script>
+    
+            
+    <script type="module">
+        import test from "./components/test.js";
+
+        function jump_video_to_time(time) {
+            const video = document.querySelector('video')
+            video.currentTime = time
+            video.play()
+        }
+
+
+
+
+
+
+        // define component
+        Vue.component('annotations-nav-tab', {
+            props: ['title', 'current_view', 'data_id', 'detected_features'],
+            computed: {
+                has_data: function () {
+                    return this.detected_features.includes(this.data_id)
+                }
+            },
+            template: `
+            <div class="nav-tab" v-bind:class="{selected:current_view == title, disabled:(!has_data)}">{{title}}
+                <span v-if="has_data" class="material-icons">
+                    check_circle
+                </span>
+            </div>
+            `
+        })
+
+        Vue.component('annotations-nav', {
+            props: ['title_ids_dict', 'current_view', 'detected_features'],
+            methods: {
+                nav_clicked: function (title) {
+                    this.$emit('nav-clicked', title)
+                },
+            },
+            template: `
+            <div class="feature-tabs">
+                <annotations-nav-tab v-for="id, title in title_ids_dict"
+                    v-bind:title="title" v-bind:data_id="id"
+                    v-bind:detected_features="detected_features" v-bind:current_view="current_view"
+                    v-on:click.native="nav_clicked(title)">
+                </annotations-nav-tab>
+            </div>
+            `
+        })
+
+        var router = new VueRouter({
+            mode: 'history',
+            // routes: { path: '/match/:id', component: test_com}
+        });
+
+
+
+        var app = new Vue({
+            router,
+            el: '#app',
+            data: {
+                json_data: {},
+                video_info: { width: 800, height: 500, length: 252 },
+                video_length: 252,
+                current_view: 'Label Detection',
+                title_ids_dict: {
+                    'Label Detection': 'shot_label_annotations',
+                    'Shot Detection': 'shot_annotations',
+                    'Object Tracking': 'object_annotations',
+                    'Person Detection': 'person_detection_annotations',
+                    'Face Detection': 'face_detection_annotations',
+                    'Logo Recognition': 'logo_recognition_annotations',
+                    'Speech Transcription': 'speech_transcriptions',
+                    'Text Detection': 'text_annotations',
+                    'Explicit Content Detection': 'explicit_annotation'
+                }
+            }, methods: {
+                jump_video: function (event_data) {
+                    document.querySelector('video').scrollIntoView({ 'behavior': 'smooth', 'block': 'center' })
+                    jump_video_to_time(event_data.seconds)
+                },
+                set_current_view: function (new_view) {
+                    this.current_view = new_view
+                    router.push({hash: '#'+new_view  })
+
+
+                }
+            },
+            computed: {
+                data_misaligned: function () {
+                   
+                    if (this.json_data)
+                        if (this.json_data.annotation_results) {
+                            const delta = this.video_info.length - this.json_data.annotation_results[0].segment.end_time_offset.seconds
+                            if (Math.abs(delta) > 2) {
+                                return true
+                            }
+                        }
+                    return false
+                },
+                detected_features: function () {
+
+                    var features = []
+
+                    if (!this.json_data.annotation_results)
+                        return features
+
+                    this.json_data.annotation_results.forEach(annotations => {
+                        console.log(Object.keys(annotations))
+                        features = features.concat(Object.keys(annotations))
+                    })
+
+                    return features
+                }
+            }
+        })
+
+
+
+        const URL = window.URL || window.webkitURL
+
+        function fetch_json(url) {
+            var json = null
+            $.ajax({
+                'async': false,
+                'url': url,
+                'dataType': "json",
+                'success': function (data) {
+                    json = data
+                }
+            })
+            return json
+        }
+
+        function load_video_from_url(url) {
+            video.src = url
+        }
+
+        
+        
+        
+        //import  gcs_upload  from "./components/gcs_upload.js"
+        async function load_video_dragged(event) {
+            
+            
+            const file = this.files[0]
+            console.log(file)
+            console.log(this.files[0].name)
+            // Object.defineProperty(file, 'name', {
+            //     writable: true,
+            //     value: "test_video.mp4"
+            // });
+            
+            console.log(file)
+            
+            //test()
+            console.log("file 업로드 되어있나?")
+            //gcs_upload(file)
+            let formData = new FormData();
+            formData.append("file", file)
+            // await axios({
+            //     method: 'post',
+            //     url: 'https://asia-northeast3-cjenm-demo-app.cloudfunctions.net/function-2', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+            //     data: {
+            //         message: formData
+            //     },
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data'
+            //     }
+            //     })
+            //     .then((response) => {
+            //         console.log(response.data);
+            //     })
+            //     .catch((error) => {
+            //         console.log(error);
+            // });
+
+
+
+                // spinner의 DOM 요소
+                const elements = {
+                    $spinner: Object.assign(document.createElement('div'), {
+                    className : 'spinner-wrapper hidden',
+                    innerHTML : 
+                        `
+                        
+                        <div class="spinner">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="wrap">
+                            <h5>동영상 업로드(1분이내)</h5>
+                        </div>
+                        </div>
+                        
+                        
+                        `
+
+                        
+                    }),
+                };
+
+
+                const elements2 = {
+                    $spinner: Object.assign(document.createElement('div'), {
+                    className : 'spinner-wrapper hidden',
+                    innerHTML : 
+                        `
+                        
+                        <div class="spinner">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="wrap">
+                            <h5>전처리 (3~5분)</h5>
+                        </div>
+                        </div>
+                        
+                        
+                        `
+
+                        
+                    }),
+                };
+
+                const elements3 = {
+                    $spinner: Object.assign(document.createElement('div'), {
+                    className : 'spinner-wrapper hidden',
+                    innerHTML : 
+                        `
+                        
+                        <div class="spinner">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="wrap">
+                            <h5>렌더링(1분이내)</h5>
+                        </div>
+                        </div>
+                        
+                        
+                        `
+
+                        
+                    }),
+                };
+                // render
+                const renders = {
+                    spinnerOffRender : () => {
+                    elements.$spinner.classList.add('hidden');
+                    },
+                    spinnerOnRender : () => {
+                    elements.$spinner.classList.remove('hidden');
+                    }
+                }
+
+                const renders2 = {
+                    spinnerOffRender : () => {
+                    elements2.$spinner.classList.add('hidden');
+                    },
+                    spinnerOnRender : () => {
+                    elements2.$spinner.classList.remove('hidden');
+                    }
+                }
+
+                const renders3 = {
+                    spinnerOffRender : () => {
+                    elements3.$spinner.classList.add('hidden');
+                    },
+                    spinnerOnRender : () => {
+                    elements3.$spinner.classList.remove('hidden');
+                    }
+                }
+                // mount
+                const mount = () => {
+                    document.body.appendChild(elements.$spinner);
+                    document.body.appendChild(elements2.$spinner);
+                    document.body.appendChild(elements3.$spinner);
+                }
+
+                // 상위 컴포넌트를 위한 메소드
+                this.renders = renders;
+                
+                this.renders2 = renders2;
+                this.renders3 = renders3;
+                //////////////////////////////////////////////
+                mount();
+            
+            
+            
+            renders.spinnerOnRender()
+            await axios.post(
+                'http://localhost:8080/upload', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                formData,
+                {
+                    headers: {
+                       'Content-Type': 'multipart/form-data'
+                    }
+                }
+                )
+                .then((response) => {
+                    renders.spinnerOffRender()
+                    console.log(response);
+                })
+                .catch((error) => {
+                    renders.spinnerOffRender()
+                    console.log(error.response.data);
+            });
+
+
+            
+            renders2.spinnerOnRender()
+            await axios({
+                method: 'get',
+                url: 'https://asia-northeast3-cjenm-demo-app.cloudfunctions.net/function-2', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                })
+                .then((response) => {
+                    renders2.spinnerOffRender()
+                    console.log("finish processing");
+                    console.log(response)
+                })
+                .catch((error) => {
+                    renders2.spinnerOffRender()
+                    console.log(error);
+                });
+
+                console.log("test_json download")
+                
+                // await axios.get(
+                // 'http://localhost:8080/files/test_json.json',
+                // {
+                //     headers: {
+	            //         'Access-Control-Allow-Origin': '*',
+	            //     },
+                // } // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                // )
+                // .then((response) => {
+                //         console.log(response);
+                //         const file_url = URL.createObjectURL(file)
+                //         load_video_from_url(file_url)
+                //         load_json_from_url(response)
+                // })
+                // .catch((error) => {
+                //     console.log(error.response);
+                // });
+
+                // await axios({
+                //     method: 'get',
+                //     // headers: {
+	            //     //     'Access-Control-Allow-Origin': '*',
+	            //     // },
+                //     url: 'http://localhost:8080/download', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                //     })
+                //     .then((response) => {
+                //         console.log(response);
+                //         // const file_url = URL.createObjectURL(file)
+                //         // load_video_from_url(file_url)
+                //         // load_json_from_url(response)
+                //     })
+                //     .catch((error) => {
+                //         console.log(error.response);
+                // });
+
+                renders3.spinnerOnRender()
+                await axios({
+                        url: 'https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/mp4-bucket/test_json.json?x-goog-signature=19e968bafd18a2f985e8d4d573862c7e6f1455171ffa5b3c33ded5cbfeaaecb58616c0729e95559028964822f2fc5ec721db318b3a0461e7d01af243e9efcb038bfdf02e78cb74beab3b2399277db27fef0bddbaa09f73921ecde72880020039ad5a7a18137ca8e73578941ef3d3654ae5e20d8ef5e5febe95866d626ea69d689efd334d0299b4e752faaaee86742082cce5cd3334079c3a7403ef2b3664ddb07fdcc727e1b75a27cec94ea39eda919566cce087ee8898913f2ca248aae3a205cd41c4ff643fc9b2070bcfa5c0d01fda4ad78909448773392d773b75fe2a1860a9df259927f58c5e1a9831392ce8f8d8e80316ec64c8ce706d0b384ba1680961&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=gcs-object-download%40cjenm-demo-app.iam.gserviceaccount.com%2F20210830%2Fasia-northeast3%2Fstorage%2Fgoog4_request&x-goog-date=20210830T005421Z&x-goog-expires=43200&x-goog-signedheaders=host',
+                        method: 'GET',
+                        responseType: 'json'
+                  }).then((response) => {
+                      
+                      renders3.spinnerOffRender()
+                      const file_url = URL.createObjectURL(file)
+                      load_video_from_url(file_url)
+                      load_json_from_url(response.data)
+                             
+                  }).catch((error)=>{
+                    renders3.spinnerOffRender()
+                      console.log(error.response)
+                  })
+            
+            
+        }
+
+        function load_json_from_url(url) {
+            // var json = null
+            // $.ajax({
+            //     'async': false,
+            //     'url': url,
+            //     'dataType': "json",
+            //     'success': function (data) {
+            //         json = data
+            //     }
+            // })
+            json_data = url
+            console.log(json_data)
+            app.json_data = json_data
+        }
+
+        function load_json_dragged(event) {
+            const file = this.files[0]
+            const file_url = URL.createObjectURL(file)
+            load_json_from_url(file_url);
+        }
+
+        var json_data = {}
+        const video = document.getElementById('video')
+        const video_input = document.getElementById('video_input')
+        const json_input = document.getElementById('json_input')
+
+
+        video.oncanplay = function () {
+            console.log("Can start playing video", video.duration, video.videoHeight, video.videoWidth)
+            app.video_info.length = video.duration
+            app.video_length.duration
+            app.video_info.height = 500
+            app.video_info.width = 800
+        }
+
+        function drag_enter(ev) {
+            ev.preventDefault()
+        }
+
+        function drop_video(ev) {
+            ev.preventDefault()
+            video_input.files = ev.dataTransfer.files
+            video_input.dispatchEvent(new Event('change'))
+
+        }
+
+        function drop_json(ev) {
+            ev.preventDefault()
+            json_input.files = ev.dataTransfer.files
+            json_input.dispatchEvent(new Event('change'))
+        }
+
+        video_input.addEventListener('change', load_video_dragged, false)
+        json_input.addEventListener('change', load_json_dragged, false)
+
+        // load_json_from_url("assets/test_json.json")
+        // load_video_from_url("assets/test_video.mp4")
+
+
+        // check for hash code in url 
+
+        if (app.$route.hash) {
+            const hash_value = decodeURI(app.$route.hash.substring(1))
+            if (hash_value in app.title_ids_dict){
+                app.current_view = hash_value
+            } 
+
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
