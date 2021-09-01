@@ -21,8 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="/Users/hwang-ingyu/video-intelligence-api-visualiser/jquery.ajax-cross-origin.min.js"></script>
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-N80GH8KX9W"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -318,8 +317,7 @@
     
             
     <script type="module">
-        import test from "./components/test.js";
-
+        
         function jump_video_to_time(time) {
             const video = document.querySelector('video')
             video.currentTime = time
@@ -462,36 +460,8 @@
             
             
             const file = this.files[0]
-            console.log(file)
-            console.log(this.files[0].name)
-            // Object.defineProperty(file, 'name', {
-            //     writable: true,
-            //     value: "test_video.mp4"
-            // });
-            
-            console.log(file)
-            
-            //test()
-            console.log("file 업로드 되어있나?")
-            //gcs_upload(file)
             let formData = new FormData();
             formData.append("file", file)
-            // await axios({
-            //     method: 'post',
-            //     url: 'https://asia-northeast3-cjenm-demo-app.cloudfunctions.net/function-2', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
-            //     data: {
-            //         message: formData
-            //     },
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data'
-            //     }
-            //     })
-            //     .then((response) => {
-            //         console.log(response.data);
-            //     })
-            //     .catch((error) => {
-            //         console.log(error);
-            // });
 
 
 
@@ -507,7 +477,7 @@
                         <div class="bar"></div>
                         <div class="bar"></div>
                         <div class="wrap">
-                            <h5>동영상 업로드(1분이내)</h5>
+                            <h5>영상 업로드(1분이내)</h5>
                         </div>
                         </div>
                         
@@ -601,7 +571,6 @@
                 
                 this.renders2 = renders2;
                 this.renders3 = renders3;
-                //////////////////////////////////////////////
                 mount();
             
             
@@ -642,46 +611,10 @@
                     console.log(error);
                 });
 
-                console.log("test_json download")
-                
-                // await axios.get(
-                // 'http://localhost:8080/files/test_json.json',
-                // {
-                //     headers: {
-	            //         'Access-Control-Allow-Origin': '*',
-	            //     },
-                // } // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
-                // )
-                // .then((response) => {
-                //         console.log(response);
-                //         const file_url = URL.createObjectURL(file)
-                //         load_video_from_url(file_url)
-                //         load_json_from_url(response)
-                // })
-                // .catch((error) => {
-                //     console.log(error.response);
-                // });
-
-                // await axios({
-                //     method: 'get',
-                //     // headers: {
-	            //     //     'Access-Control-Allow-Origin': '*',
-	            //     // },
-                //     url: 'http://localhost:8080/download', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
-                //     })
-                //     .then((response) => {
-                //         console.log(response);
-                //         // const file_url = URL.createObjectURL(file)
-                //         // load_video_from_url(file_url)
-                //         // load_json_from_url(response)
-                //     })
-                //     .catch((error) => {
-                //         console.log(error.response);
-                // });
 
                 renders3.spinnerOnRender()
                 await axios({
-                        url: 'https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/mp4-bucket/test_json.json?x-goog-signature=19e968bafd18a2f985e8d4d573862c7e6f1455171ffa5b3c33ded5cbfeaaecb58616c0729e95559028964822f2fc5ec721db318b3a0461e7d01af243e9efcb038bfdf02e78cb74beab3b2399277db27fef0bddbaa09f73921ecde72880020039ad5a7a18137ca8e73578941ef3d3654ae5e20d8ef5e5febe95866d626ea69d689efd334d0299b4e752faaaee86742082cce5cd3334079c3a7403ef2b3664ddb07fdcc727e1b75a27cec94ea39eda919566cce087ee8898913f2ca248aae3a205cd41c4ff643fc9b2070bcfa5c0d01fda4ad78909448773392d773b75fe2a1860a9df259927f58c5e1a9831392ce8f8d8e80316ec64c8ce706d0b384ba1680961&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=gcs-object-download%40cjenm-demo-app.iam.gserviceaccount.com%2F20210830%2Fasia-northeast3%2Fstorage%2Fgoog4_request&x-goog-date=20210830T005421Z&x-goog-expires=43200&x-goog-signedheaders=host',
+                        url: 'https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/mp4-bucket/test_json.json?x-goog-signature=6fd10a8cc4e3097ad4febe05f9196e93a75a5491ac747898ac2dc287d3981f3d4952924ac722a2b43cd428bbf3dfdf405829deff1496fb41d015155ac74eb52950f12a947e5c1607a12e837c6385bd84b37ab0027d6a05b0eca146941342e41add92881b6c02bb1f43b1e7a7481ef8154788adb3525b01971b7fda7a39955483fbf2e6eb18edb8187a76ba293eccdd9c0f524fc74bd0f12f602fa92ffb7f1eceded5fb672ab1a5fd2f0aecca8779c89320ff2c7822c9e1084d81533410b6499c815e76fceb4fc437224f01dfec3860d8bf94aedbb2f5d3d62bdc48015bf1eb1228b76b21940621df25fc46a96d319dfaceff7f8a02fdd4a95c0ff642312fcf7a&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=gcs-object-download%40cjenm-demo-app.iam.gserviceaccount.com%2F20210901%2Fasia-northeast3%2Fstorage%2Fgoog4_request&x-goog-date=20210901T022154Z&x-goog-expires=302400&x-goog-signedheaders=host',
                         method: 'GET',
                         responseType: 'json'
                   }).then((response) => {
