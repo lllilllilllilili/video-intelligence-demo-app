@@ -575,46 +575,46 @@
             
             
             
-            renders.spinnerOnRender()
-            await axios.post(
-                'http://34.64.189.149:8080/upload', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
-                formData,
-                {
-                    headers: {
-                       'Content-Type': 'multipart/form-data'
+                renders.spinnerOnRender()
+                await axios.post(
+                    'http://34.64.189.149:8080/upload', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                    formData,
+                    {
+                        headers: {
+                        'Content-Type': 'multipart/form-data'
+                        }
                     }
-                }
-                )
-                .then((response) => {
-                    renders.spinnerOffRender()
-                    console.log(response);
-                })
-                .catch((error) => {
-                    renders.spinnerOffRender()
-                    console.log(error.response.data);
-            });
-
-
-            
-            renders2.spinnerOnRender()
-            await axios({
-                method: 'get',
-                url: 'https://asia-northeast3-cjenm-demo-app.cloudfunctions.net/function-2', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
-                })
-                .then((response) => {
-                    renders2.spinnerOffRender()
-                    console.log("finish processing");
-                    console.log(response)
-                })
-                .catch((error) => {
-                    renders2.spinnerOffRender()
-                    console.log(error);
+                    )
+                    .then((response) => {
+                        renders.spinnerOffRender()
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        renders.spinnerOffRender()
+                        console.log(error.response.data);
                 });
+
+
+                
+                renders2.spinnerOnRender()
+                await axios({
+                    method: 'get',
+                    url: 'https://asia-northeast3-cjenm-demo-app.cloudfunctions.net/function-2', // or https://us-central1-PROJECT_NAME.cloudfunctions.net/test_message_json
+                    })
+                    .then((response) => {
+                        renders2.spinnerOffRender()
+                        console.log("finish processing");
+                        console.log(response)
+                    })
+                    .catch((error) => {
+                        renders2.spinnerOffRender()
+                        console.log(error);
+                    });
 
 
                 renders3.spinnerOnRender()
                 await axios({
-                        url: 'https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/mp4-bucket/test_json.json?x-goog-signature=6fd10a8cc4e3097ad4febe05f9196e93a75a5491ac747898ac2dc287d3981f3d4952924ac722a2b43cd428bbf3dfdf405829deff1496fb41d015155ac74eb52950f12a947e5c1607a12e837c6385bd84b37ab0027d6a05b0eca146941342e41add92881b6c02bb1f43b1e7a7481ef8154788adb3525b01971b7fda7a39955483fbf2e6eb18edb8187a76ba293eccdd9c0f524fc74bd0f12f602fa92ffb7f1eceded5fb672ab1a5fd2f0aecca8779c89320ff2c7822c9e1084d81533410b6499c815e76fceb4fc437224f01dfec3860d8bf94aedbb2f5d3d62bdc48015bf1eb1228b76b21940621df25fc46a96d319dfaceff7f8a02fdd4a95c0ff642312fcf7a&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=gcs-object-download%40cjenm-demo-app.iam.gserviceaccount.com%2F20210901%2Fasia-northeast3%2Fstorage%2Fgoog4_request&x-goog-date=20210901T022154Z&x-goog-expires=302400&x-goog-signedheaders=host',
+                        url: 'https://storage.googleapis.com/mp4-bucket/test_json.json?x-goog-signature=6fd10a8cc4e3097ad4febe05f9196e93a75a5491ac747898ac2dc287d3981f3d4952924ac722a2b43cd428bbf3dfdf405829deff1496fb41d015155ac74eb52950f12a947e5c1607a12e837c6385bd84b37ab0027d6a05b0eca146941342e41add92881b6c02bb1f43b1e7a7481ef8154788adb3525b01971b7fda7a39955483fbf2e6eb18edb8187a76ba293eccdd9c0f524fc74bd0f12f602fa92ffb7f1eceded5fb672ab1a5fd2f0aecca8779c89320ff2c7822c9e1084d81533410b6499c815e76fceb4fc437224f01dfec3860d8bf94aedbb2f5d3d62bdc48015bf1eb1228b76b21940621df25fc46a96d319dfaceff7f8a02fdd4a95c0ff642312fcf7a&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=gcs-object-download%40cjenm-demo-app.iam.gserviceaccount.com%2F20210901%2Fasia-northeast3%2Fstorage%2Fgoog4_request&x-goog-date=20210901T022154Z&x-goog-expires=302400&x-goog-signedheaders=host',
                         method: 'GET',
                         responseType: 'json'
                   }).then((response) => {
